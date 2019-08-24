@@ -6,6 +6,7 @@
             <p>{{ bb.content }}</p>
             <p><a href="{% url 'by_rubric' bb.rubric.pk %}">{{ bb.rubric.name }}</a> </p>
             <p>{{ bb.published|date:"d.m.Y H:i:s" }}</p>
+            <hr>
         </div>
         {% endfor %}
 {% endblock %}

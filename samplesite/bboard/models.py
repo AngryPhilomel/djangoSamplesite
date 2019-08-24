@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 class Bb(models.Model):
     title = models.CharField(max_length=50, verbose_name='Товар')
@@ -6,6 +7,17 @@ class Bb(models.Model):
     price = models.FloatField(null=True, blank=True, verbose_name='Цена')
     published = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Опубликовано')
     rubric = models.ForeignKey('Rubric', null=True, on_delete=models.PROTECT, verbose_name='Рубрика')
+
+    def clean(self):
+        errors = {}
+        if not self.content:
+            errors['content'] = ValidationError('Укажите описание товара')
+
+        if self.price and self.price < 0:
+            errors['price'] = ValidationError('Укажите неотрицательную цену')
+
+        if errors:
+            raise ValidationError(errors)
 
     class Meta:
         verbose_name_plural = 'Объявления'
@@ -19,6 +31,9 @@ class Rubric(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return "/bboard/%s" % self.pk
 
     class Meta:
         verbose_name_plural = 'Рубрики'
